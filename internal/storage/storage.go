@@ -17,13 +17,16 @@ func CreateEvent(event *models.Event) error {
 
 	if storage.m == nil {
 		storage.m = make(map[uint64]map[uint64]models.Event)
-	} else {
-		_, ok := storage.m[event.UserID][event.EventID]
-		if ok {
-			return models.ErrExistingEvent
-		}
 	}
-	storage.m[event.UserID] = make(map[uint64]models.Event)
+
+	if storage.m[event.UserID] == nil {
+		storage.m[event.UserID] = make(map[uint64]models.Event)
+	}
+
+	if _, exists := storage.m[event.UserID][event.EventID]; exists {
+		return models.ErrExistingEvent
+	}
+
 	storage.m[event.UserID][event.EventID] = *event
 	return nil
 }
@@ -74,7 +77,7 @@ func GetEventsForDay(userID uint64, date time.Time) ([]models.Event, error) {
 
 	result := make([]models.Event, 0)
 	for _, value := range values {
-		if value.Date == date {
+		if date == value.Date {
 			result = append(result, value)
 		}
 	}
@@ -129,4 +132,10 @@ func GetEventsForMonth(userID uint64, startDate time.Time) ([]models.Event, erro
 		}
 	}
 	return result, nil
+}
+
+func Clear() {
+	storage.mu.Lock()
+	defer storage.mu.Unlock()
+	storage.m = make(map[uint64]map[uint64]models.Event)
 }

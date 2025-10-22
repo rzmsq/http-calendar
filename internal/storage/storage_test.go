@@ -89,7 +89,7 @@ func TestDeleteEvent(t *testing.T) {
 	}
 }
 
-func TestGetEventsForDay(t *testing.T) {
+func TestGetEventForDay(t *testing.T) {
 	testDate := time.Date(2024, 1, 15, 10, 0, 0, 0, time.UTC)
 
 	storage.m = map[uint64]map[uint64]models.Event{
@@ -106,6 +106,26 @@ func TestGetEventsForDay(t *testing.T) {
 
 	if len(events) != 1 {
 		t.Errorf("Expected 1 event, got %d", len(events))
+	}
+}
+
+func TestGetEventsForDay(t *testing.T) {
+	testDate := time.Date(2024, 1, 15, 10, 0, 0, 0, time.UTC)
+
+	storage.m = map[uint64]map[uint64]models.Event{
+		1: {
+			1: {EventID: 1, UserID: 1, Date: testDate},
+			2: {EventID: 2, UserID: 1, Date: testDate},
+		},
+	}
+
+	events, err := GetEventsForDay(1, testDate)
+	if err != nil {
+		t.Errorf("GetEventsForDay() error = %v", err)
+	}
+
+	if len(events) != 2 {
+		t.Errorf("Expected 2 event, got %d", len(events))
 	}
 }
 

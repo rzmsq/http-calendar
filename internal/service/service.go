@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const DateFormat = "2006-01-02"
+const DateFormat = "2006-01-15"
 
 func CreateEvent(userID, eventID, dateStr, title, description string) (*models.Event, error) {
 	uID, eID, date, err := validateAndParse(userID, eventID, dateStr, title)
