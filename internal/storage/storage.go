@@ -77,7 +77,7 @@ func GetEventsForDay(userID uint64, date time.Time) ([]models.Event, error) {
 
 	result := make([]models.Event, 0, len(values))
 	for _, value := range values {
-		if date == value.Date {
+		if date.Equal(value.Date) {
 			result = append(result, value)
 		}
 	}

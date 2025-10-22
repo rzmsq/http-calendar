@@ -43,8 +43,8 @@ func run(cfg *config.Config) {
 		}
 	}()
 
-	stop := make(chan os.Signal, 3)
-	signal.Notify(stop, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGINT)
+	stop := make(chan os.Signal, 2)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
 
 	select {
 	case err := <-serverError:
