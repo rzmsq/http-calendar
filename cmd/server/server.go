@@ -15,7 +15,10 @@ import (
 
 func main() {
 	cfg := config.NewConfig()
+	run(cfg)
+}
 
+func run(cfg *config.Config) {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /create_event", func(w http.ResponseWriter, r *http.Request) {})
@@ -44,9 +47,9 @@ func main() {
 
 	select {
 	case err := <-serverError:
-		log.Fatalf("http server error: %s\n", err)
-	case <-stop:
-		log.Println("stopping http server")
+		log.Fatalf("http server error: %v\n", err)
+	case sig := <-stop:
+		log.Printf("stopping http server by signal %v\n", sig)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
