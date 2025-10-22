@@ -43,7 +43,6 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	description := r.FormValue("description")
 
-	log.Println(uid)
 	model, err := service.CreateEvent(uid, date, title, description)
 	if errors.Is(err, models.ErrTitleIsRequired) {
 		sendError(w, err.Error(), http.StatusServiceUnavailable)
@@ -55,4 +54,49 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sendSuccess(w, model)
+}
+
+func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		sendError(w, err.Error(), http.StatusBadRequest)
+	}
+
+	uid := r.FormValue("user_id")
+	eid := r.FormValue("event_id")
+	date := r.FormValue("date")
+	title := r.FormValue("title")
+	description := r.FormValue("description")
+
+	model, err := service.UpdateEvent(uid, eid, date, title, description)
+	if errors.Is(err, models.ErrTitleIsRequired) {
+		sendError(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	if err != nil {
+		sendError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	sendSuccess(w, model)
+}
+
+func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		sendError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	uid := r.FormValue("user_id")
+	eid := r.FormValue("event_id")
+
+	err := service.DeleteEvent(uid, eid)
+	if err != nil && (errors.Is(err, models.ErrUserNotFound) || errors.Is(err, models.ErrEventNotFound)) {
+		sendError(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	if err != nil {
+		sendError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
