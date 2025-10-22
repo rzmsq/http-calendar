@@ -30,7 +30,7 @@ func TestCreateEvent(t *testing.T) {
 }
 
 func TestCreateEvent_ExistingEvent(t *testing.T) {
-	storage.m = map[uint]map[uint]models.Event{
+	storage.m = map[uint64]map[uint64]models.Event{
 		1: {
 			1: {EventID: 1, UserID: 1, Title: "Existing"},
 		},
@@ -45,7 +45,7 @@ func TestCreateEvent_ExistingEvent(t *testing.T) {
 }
 
 func TestUpdateEvent(t *testing.T) {
-	storage.m = map[uint]map[uint]models.Event{
+	storage.m = map[uint64]map[uint64]models.Event{
 		1: {
 			1: {EventID: 1, UserID: 1, Title: "Old Title"},
 		},
@@ -75,16 +75,16 @@ func TestUpdateEvent_NotFound(t *testing.T) {
 }
 
 func TestDeleteEvent(t *testing.T) {
-	storage.m = map[uint]map[uint]models.Event{
+	storage.m = map[uint64]map[uint64]models.Event{
 		1: {1: {EventID: 1, UserID: 1}},
 	}
 
-	err := DeleteEvent(1)
+	err := DeleteEvent(1, 1)
 	if err != nil {
 		t.Errorf("DeleteEvent() error = %v", err)
 	}
 
-	if _, exists := storage.m[1]; exists {
+	if _, exists := storage.m[1][1]; exists {
 		t.Errorf("User events not deleted")
 	}
 }
@@ -92,7 +92,7 @@ func TestDeleteEvent(t *testing.T) {
 func TestGetEventsForDay(t *testing.T) {
 	testDate := time.Date(2024, 1, 15, 10, 0, 0, 0, time.UTC)
 
-	storage.m = map[uint]map[uint]models.Event{
+	storage.m = map[uint64]map[uint64]models.Event{
 		1: {
 			1: {EventID: 1, UserID: 1, Date: testDate},
 			2: {EventID: 2, UserID: 1, Date: testDate.AddDate(0, 0, 1)},
@@ -112,7 +112,7 @@ func TestGetEventsForDay(t *testing.T) {
 func TestGetEventsForWeek(t *testing.T) {
 	startDate := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
 
-	storage.m = map[uint]map[uint]models.Event{
+	storage.m = map[uint64]map[uint64]models.Event{
 		1: {
 			1: {EventID: 1, UserID: 1, Date: startDate},
 			2: {EventID: 2, UserID: 1, Date: startDate.AddDate(0, 0, 3)},
@@ -133,7 +133,7 @@ func TestGetEventsForWeek(t *testing.T) {
 func TestGetEventsForMonth(t *testing.T) {
 	startDate := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
 
-	storage.m = map[uint]map[uint]models.Event{
+	storage.m = map[uint64]map[uint64]models.Event{
 		1: {
 			1: {EventID: 1, UserID: 1, Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)},
 			2: {EventID: 2, UserID: 1, Date: time.Date(2024, 1, 31, 0, 0, 0, 0, time.UTC)},

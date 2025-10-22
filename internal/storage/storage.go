@@ -8,7 +8,7 @@ import (
 
 var storage struct {
 	mu sync.RWMutex
-	m  map[uint]map[uint]models.Event
+	m  map[uint64]map[uint64]models.Event
 }
 
 func CreateEvent(event *models.Event) error {
@@ -16,14 +16,14 @@ func CreateEvent(event *models.Event) error {
 	defer storage.mu.Unlock()
 
 	if storage.m == nil {
-		storage.m = make(map[uint]map[uint]models.Event)
+		storage.m = make(map[uint64]map[uint64]models.Event)
 	} else {
 		_, ok := storage.m[event.UserID][event.EventID]
 		if ok {
 			return models.ErrExistingEvent
 		}
 	}
-	storage.m[event.UserID] = make(map[uint]models.Event)
+	storage.m[event.UserID] = make(map[uint64]models.Event)
 	storage.m[event.UserID][event.EventID] = *event
 	return nil
 }
@@ -44,23 +44,23 @@ func UpdateEvent(event *models.Event) error {
 	return nil
 }
 
-func DeleteEvent(userID uint) error {
+func DeleteEvent(userID, eventID uint64) error {
 	storage.mu.Lock()
 	defer storage.mu.Unlock()
 
 	if storage.m == nil {
 		return models.ErrUserNotFound
 	} else {
-		_, ok := storage.m[userID]
+		_, ok := storage.m[userID][eventID]
 		if !ok {
-			return models.ErrUserNotFound
+			return models.ErrEventNotFound
 		}
 	}
-	delete(storage.m, userID)
+	delete(storage.m[userID], eventID)
 	return nil
 }
 
-func GetEventsForDay(userID uint, date time.Time) ([]models.Event, error) {
+func GetEventsForDay(userID uint64, date time.Time) ([]models.Event, error) {
 	storage.mu.Lock()
 	defer storage.mu.Unlock()
 
@@ -81,7 +81,7 @@ func GetEventsForDay(userID uint, date time.Time) ([]models.Event, error) {
 	return result, nil
 }
 
-func GetEventsForWeek(userID uint, startDate time.Time) ([]models.Event, error) {
+func GetEventsForWeek(userID uint64, startDate time.Time) ([]models.Event, error) {
 	storage.mu.Lock()
 	defer storage.mu.Unlock()
 
@@ -106,7 +106,7 @@ func GetEventsForWeek(userID uint, startDate time.Time) ([]models.Event, error) 
 	return result, nil
 }
 
-func GetEventsForMonth(userID uint, startDate time.Time) ([]models.Event, error) {
+func GetEventsForMonth(userID uint64, startDate time.Time) ([]models.Event, error) {
 	storage.mu.Lock()
 	defer storage.mu.Unlock()
 
