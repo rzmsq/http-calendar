@@ -9,7 +9,6 @@ var (
 	ErrUserNotFound    = errors.New("user not found")
 	ErrEventNotFound   = errors.New("event not found")
 	ErrTitleIsRequired = errors.New("title is required")
-	ErrInvalidDate     = errors.New("invalid date")
 	ErrExistingEvent   = errors.New("existing event")
 )
 

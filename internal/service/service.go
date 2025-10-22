@@ -4,11 +4,12 @@ import (
 	"errors"
 	"http-calendar/internal/models"
 	"http-calendar/internal/storage"
+	"log"
 	"strconv"
 	"time"
 )
 
-const DateFormat = "2006-01-15"
+const DateFormat = "2006-01-02"
 
 func CreateEvent(userID, dateStr, title, description string) (*models.Event, error) {
 	uID, date, err := validateAndParse(userID, dateStr, title)
@@ -84,8 +85,9 @@ func parseUserIDAndDate(userID, dateStr string) (uint64, time.Time, error) {
 	if err != nil {
 		return 0, time.Time{}, err
 	}
-
+	log.Println(dateStr)
 	date, err := time.Parse(DateFormat, dateStr)
+	log.Println(date)
 	if err != nil {
 		return 0, time.Time{}, err
 	}

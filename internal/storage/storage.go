@@ -75,7 +75,7 @@ func GetEventsForDay(userID uint64, date time.Time) ([]models.Event, error) {
 		return nil, models.ErrUserNotFound
 	}
 
-	result := make([]models.Event, 0)
+	result := make([]models.Event, 0, len(values))
 	for _, value := range values {
 		if date == value.Date {
 			result = append(result, value)
@@ -99,7 +99,7 @@ func GetEventsForWeek(userID uint64, startDate time.Time) ([]models.Event, error
 	startOfWeek := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
 	endOfWeek := startOfWeek.AddDate(0, 0, 7)
 
-	result := make([]models.Event, 0)
+	result := make([]models.Event, 0, len(values))
 	for _, value := range values {
 		eventDate := time.Date(value.Date.Year(), value.Date.Month(), value.Date.Day(), 0, 0, 0, 0, value.Date.Location())
 		if (eventDate.Equal(startOfWeek) || eventDate.After(startOfWeek)) && eventDate.Before(endOfWeek) {
@@ -124,7 +124,7 @@ func GetEventsForMonth(userID uint64, startDate time.Time) ([]models.Event, erro
 	startOfMonth := time.Date(startDate.Year(), startDate.Month(), 1, 0, 0, 0, 0, startDate.Location())
 	endOfMonth := startOfMonth.AddDate(0, 1, 0)
 
-	result := make([]models.Event, 0)
+	result := make([]models.Event, 0, len(values))
 	for _, value := range values {
 		eventDate := time.Date(value.Date.Year(), value.Date.Month(), value.Date.Day(), 0, 0, 0, 0, value.Date.Location())
 		if (eventDate.Equal(startOfMonth) || eventDate.After(startOfMonth)) && eventDate.Before(endOfMonth) {
