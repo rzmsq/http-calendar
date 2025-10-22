@@ -100,3 +100,36 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func GetEventsForDayHandler(w http.ResponseWriter, r *http.Request) {
+	getEvents(w, r, service.GetEventsForDay)
+}
+
+func GetEventsForWeekHandler(w http.ResponseWriter, r *http.Request) {
+	getEvents(w, r, service.GetEventsForWeek)
+}
+
+func GetEventsForMonthHandler(w http.ResponseWriter, r *http.Request) {
+	getEvents(w, r, service.GetEventsForMonth)
+}
+
+func getEvents(w http.ResponseWriter, r *http.Request, fn func(userID, date string) ([]models.Event, error)) {
+	uid := r.URL.Query().Get("user_id")
+	date := r.URL.Query().Get("date")
+
+	events, err := fn(uid, date)
+	if errors.Is(err, models.ErrUserNotFound) {
+		sendError(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	if err != nil {
+		sendError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(events)
+	if err != nil {
+		log.Printf("Failed encode response: %v\n", err)
+	}
+}

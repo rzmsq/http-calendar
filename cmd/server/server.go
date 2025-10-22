@@ -25,9 +25,9 @@ func run(cfg *config.Config) {
 	mux.HandleFunc("POST /create_event", handler.CreateHandler)
 	mux.HandleFunc("POST /update_event", handler.UpdateHandler)
 	mux.HandleFunc("POST /delete_event", handler.DeleteHandler)
-	//mux.HandleFunc("GET /events_for_day", handler.GetEventsForDayHandler)
-	//mux.HandleFunc("GET /events_for_week", handler.GetEventsForWeekHandler)
-	//mux.HandleFunc("GET /events_for_month", handler.GetEventsForMonthHandler)
+	mux.HandleFunc("GET /events_for_day", handler.GetEventsForDayHandler)
+	mux.HandleFunc("GET /events_for_week", handler.GetEventsForWeekHandler)
+	mux.HandleFunc("GET /events_for_month", handler.GetEventsForMonthHandler)
 
 	httpServer := &http.Server{
 		Addr:    ":" + cfg.Port,

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"http-calendar/internal/models"
 	"http-calendar/internal/storage"
-	"log"
 	"strconv"
 	"time"
 )
@@ -85,9 +84,7 @@ func parseUserIDAndDate(userID, dateStr string) (uint64, time.Time, error) {
 	if err != nil {
 		return 0, time.Time{}, err
 	}
-	log.Println(dateStr)
 	date, err := time.Parse(DateFormat, dateStr)
-	log.Println(date)
 	if err != nil {
 		return 0, time.Time{}, err
 	}
