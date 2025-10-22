@@ -8,8 +8,8 @@ import (
 )
 
 type Config struct {
-	Port    string `yaml:"port" env:"PORT" default:"8080"`
-	PathLog string `yaml:"path_log" env:"PATH_LOG" default:"/dev/null"`
+	Port    string `yaml:"port" env:"PORT" default:"8080" env-default:"8080"`
+	PathLog string `yaml:"path_log" env:"PATH_LOG" default:"/dev/null" env-default:"/dev/null"`
 }
 
 func NewConfig() *Config {

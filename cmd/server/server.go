@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"http-calendar/internal/config"
+	"http-calendar/internal/handler"
 	"http-calendar/internal/logger"
 	"log"
 	"net/http"
@@ -21,12 +22,12 @@ func main() {
 func run(cfg *config.Config) {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /create_event", func(w http.ResponseWriter, r *http.Request) {})
-	mux.HandleFunc("POST /update_event", func(w http.ResponseWriter, r *http.Request) {})
-	mux.HandleFunc("POST /delete_event", func(w http.ResponseWriter, r *http.Request) {})
-	mux.HandleFunc("GET /events_for_day", func(w http.ResponseWriter, r *http.Request) {})
-	mux.HandleFunc("GET /events_for_week", func(w http.ResponseWriter, r *http.Request) {})
-	mux.HandleFunc("GET /events_for_month", func(w http.ResponseWriter, r *http.Request) {})
+	mux.HandleFunc("POST /create_event", handler.CreateHandler)
+	//mux.HandleFunc("POST /update_event", handler.UpdateHandler)
+	//mux.HandleFunc("POST /delete_event", handler.DeleteHandler)
+	//mux.HandleFunc("GET /events_for_day", handler.GetEventsForDayHandler)
+	//mux.HandleFunc("GET /events_for_week", handler.GetEventsForWeekHandler)
+	//mux.HandleFunc("GET /events_for_month", handler.GetEventsForMonthHandler)
 
 	httpServer := &http.Server{
 		Addr:    ":" + cfg.Port,
@@ -34,7 +35,7 @@ func run(cfg *config.Config) {
 	}
 
 	serverError := make(chan error, 1)
-	log.Printf("starting http server on port %s\n", cfg.Port)
+	log.Printf("starting http server on port %s\n", httpServer.Addr)
 	go func() {
 		err := httpServer.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {

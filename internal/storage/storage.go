@@ -134,6 +134,10 @@ func GetEventsForMonth(userID uint64, startDate time.Time) ([]models.Event, erro
 	return result, nil
 }
 
+func GetNewEventID() uint64 {
+	return uint64(time.Now().UnixNano())
+}
+
 func Clear() {
 	storage.mu.Lock()
 	defer storage.mu.Unlock()

@@ -14,11 +14,11 @@ var (
 )
 
 type Event struct {
-	UserID      uint64
-	EventID     uint64
-	Date        time.Time
-	Title       string
-	Description string
+	UserID      uint64    `json:"user_id"`
+	EventID     uint64    `json:"event_id"`
+	Date        time.Time `json:"date"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
 }
 
 func NewEvent(userID uint64, eventID uint64, date time.Time, title, description string) *Event {
