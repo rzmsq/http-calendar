@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"http-calendar/internal/config"
 	"http-calendar/internal/logger"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
@@ -25,8 +30,31 @@ func main() {
 		Handler: logger.Middleware(mux, cfg.PathLog),
 	}
 
-	err := httpServer.ListenAndServe()
-	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.Fatal(err)
+	serverError := make(chan error, 1)
+	log.Printf("starting http server on port %s\n", cfg.Port)
+	go func() {
+		err := httpServer.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			serverError <- err
+		}
+	}()
+
+	stop := make(chan os.Signal, 3)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGINT)
+
+	select {
+	case err := <-serverError:
+		log.Fatalf("http server error: %s\n", err)
+	case <-stop:
+		log.Println("stopping http server")
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	err := httpServer.Shutdown(ctx)
+	if err != nil {
+		log.Fatalf("http server shutdown error: %s\n", err)
+	}
+	log.Println("http server shutdown complete")
 }
