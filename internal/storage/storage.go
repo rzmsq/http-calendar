@@ -23,6 +23,7 @@ func CreateEvent(event *models.Event) error {
 			return models.ErrExistingEvent
 		}
 	}
+	storage.m[event.UserID] = make(map[uint]models.Event)
 	storage.m[event.UserID][event.EventID] = *event
 	return nil
 }
